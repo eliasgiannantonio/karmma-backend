@@ -9,16 +9,31 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://karmma-frontend.vercel.app',
+    'https://*.vercel.app'  // Permite todos los dominios de Vercel
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 // Configurar transportador de email
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false, // true for 465, false for other ports
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
-  }
+  },
+  tls: {
+    rejectUnauthorized: false
+  },
+  connectionTimeout: 10000, // 10 segundos
+  greetingTimeout: 5000,
+  socketTimeout: 10000
 });
 
 // Verificar conexión del transportador
